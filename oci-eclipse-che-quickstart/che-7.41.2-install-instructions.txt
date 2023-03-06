@@ -1,0 +1,47 @@
+1. Create OKE cluster (with default VCN options, initially. TO make it smooth)
+
+2. Here are our OKE cluster size: Node size: VM.Standard.E3.Flex 16 OCPU, 64 GB memory and 250GB Boot volume, Oracle Linux 7.9
+
+3. Create jumpbox host in apiServer subnet. Log into that host.
+
+4. Access newly created cluster as a sanity check from jump host. (Follow instructions on OKE cluster to access)
+
+5. Do the following in Jump host.
+   a)      -Install OCI CLI Jumphost
+            sudo yum install python36-oci-cli
+            access kubetrnets cluster from instructions provided in OCI console
+
+   b)  Ensure internet access is there from this host. Execute "curl google.com"
+   c)  Install kubectl:
+       curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+       curl -LO "https://dl.k8s.io/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
+       echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
+
+       sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+   d)  Install chectl version 7.41.2:
+
+       -Install Latest Chectl
+          bash <(curl -sL  https://www.eclipse.org/che/chectl/)
+       -Go to /usr/local/lib/chectl and remove all contents in that folder
+       -Get 7.41.2 version of chectl from "wget https://github.com/che-incubator/chectl/releases/download/7.41.2/chectl-linux-x64.tar.gz"
+       -untar it from /usr/local/lib folder )(tar -xvf chectl-linux-x64.tar.gz)
+       -Verify chectl version. It should show 7.41.2
+
+   e)  Create Namespace where eclipse-che installed. Say it is dev.
+       kubectl create ns dev
+
+   f)  Create Nginx (This is for loadbalancer)
+
+       kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.44.0/deploy/static/provider/cloud/deploy.yaml
+
+   g)  (Optional) If you want to, bind LB to reserved IP, download above yaml file locally and update value of "loadBalancerIP" key with your reserved IP and
+        execute kubectl apply -f deploy.yaml
+
+   h) Install Eclipse-Che with following command.
+
+      chectl server:deploy --installer=operator --platform=k8s --multiuser --chenamespace=dev --domain=dev.yourdomainname.com --k8spodreadytimeout=300000 --k8spodwaittimeout=3000000 --debug --che-operator-cr-patch-yaml=dev-che.yaml
+
+   i) After install, to access keycloak password:
+
+      kubectl get secret che-identity-secret  -n dev -o json | jq -r '.data.password' | base64 -d

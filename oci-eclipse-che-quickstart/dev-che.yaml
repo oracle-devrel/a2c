@@ -1,0 +1,19 @@
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+metadata:
+  name: eclipse-che
+spec:
+  server:
+    workspaceNamespaceDefault: "<username>-dev"
+    customCheProperties:
+      CHE_LIMITS_USER_WORKSPACES_RUN_COUNT: "-1"
+  database:
+    chePostgresUser: 'pguser'
+    chePostgresPassword: 'yourpassword'
+    chePostgresDb: 'dbdev'
+  storage:
+    pvcStrategy: 'per-workspace'
+  auth:
+    externalIdentityProvider: false
+  metrics:
+    enabled: false
