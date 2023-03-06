@@ -1,3 +1,7 @@
+# Copyright © 2022, Oracle and/or its affiliates.
+# All rights reserved. Licensed under the Universal Permissive License (UPL), Version 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+
 1. Create OKE cluster (with default VCN options, initially. TO make it smooth)
 
 2. Here are our OKE cluster size: Node size: VM.Standard.E3.Flex 16 OCPU, 64 GB memory and 250GB Boot volume, Oracle Linux 7.9
